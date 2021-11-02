@@ -5,7 +5,7 @@
 	<groupId>com.mt</groupId>
 	<artifactId>maven-web-application</artifactId>
 	<packaging>war</packaging>
-	<version>12.6</version>
+	<version>12.68-SNAPSHOT</version>
 	
 	<name>maven-web-application</name>
 
