@@ -1,0 +1,47 @@
+pipeline{
+    
+    agent any
+    tools{
+        maven 'Today_MAVEN'
+    }
+    stages{
+        stage('getting code from GitHUb')
+        {
+            steps{
+               git 'https://github.com/CBN-Infotech-Original-Projects/maven-web-application.git' 
+            }
+        }
+        stage('creation of a package'){
+            steps{
+                sh "mvn clean package"
+            }
+        }
+        stage('generating sonar reports'){
+            steps{
+                sh "mvn sonar:sonar"
+            }
+        }
+        stage('storing in nexus'){
+            steps{
+                sh " mvn deploy"
+            }
+        }
+        stage('deploy into tomcat'){
+            steps{
+                sshagent(['a394ab20-1fda-4b5c-add9-e8188ff2f1f4']) {
+                   sh "scp -o StrictHostKeyChecking=no target/maven-web-application.war  ec2-user@34.226.150.12:/opt/apache-tomcat-9.0.62/webapps/"
+                }
+            }
+        }
+    }
+    post{
+        always{
+            emailext body: '''Hi Dev Team,
+
+Please find the status of the latest job.
+
+Regards
+Bhaskar''', subject: 'Regarding Job status', to: 'bhaskar.naidu19@gmail.com,ps.cbnap@gmail.com,bhaskar.itsoft@gmail.com'
+        }
+    }
+}
